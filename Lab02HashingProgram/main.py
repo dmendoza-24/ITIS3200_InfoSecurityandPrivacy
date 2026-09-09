@@ -24,8 +24,7 @@ def traverse_directory(directory) -> dict:
     for item in dir_path.iterdir():
         if item.is_file():
             filepath = pathlib.Path(item)
-            filename = filepath.name
-            hash_table[filename] = hash_file(filepath)
+            hash_table[str(filepath)] = hash_file(filepath)
     return hash_table
 
 def generate_table(directory) -> bool:
@@ -37,8 +36,16 @@ def generate_table(directory) -> bool:
     except:
         return False
 
-def validate_hash(file, hash) -> bool:
-    pass
+def validate_hashes() -> bool:
+    valid = True
+    with open('hash_table.json') as directory:
+        hash_table = json.load(directory)
+        for path, hash in hash_table.items():
+            if hash_file(path) != hash:
+                print("Invalid hash found at file: ", path)
+                valid = False
+        if valid:
+            print("All keys validated in", directory.name)
 
 def main():
     while True:
@@ -50,15 +57,7 @@ def main():
             else:
                 print("Error generating hash table")
         elif choice == 2:
-            valid = True
-            with open('hash_table.json') as file:
-                hash_table = json.load(file)
-                for path, hash in hash_table.items():
-                    if not validate_hash(path, hash):
-                        print("Invalid hash found at file: ", path)
-                        valid = False
-                if valid:
-                    print("All keys validated in", file)
+            validate_hashes()
         elif choice == 3:
             print("Exiting...")
             break
