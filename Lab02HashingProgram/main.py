@@ -4,10 +4,18 @@ Daniel Mendoza, 801414965
 ITIS 3200 - Info Security and Privacy
 Professor Jian Xiang
 '''
-import json
+import json # https://docs.python.org/3/library/json.html
+import hashlib # https://docs.python.org/3/library/hashlib.html
+hash_alg = 'sha256'
 
-def hash_file():
-    pass
+def hash_file(path) -> str:
+    hash_obj = hashlib.new(hash_alg)
+    with open(path, 'rb') as file:
+        # use an iterator to read through the file with 65536 bytes (64KB) per chunk
+        # reads until end of file (b'', or empty byte)
+        for chunk in iter(lambda: file.read(65536), b''):
+            hash_obj.update(chunk)
+    return hash_obj.hexdigest()
 
 def traverse_directory():
     pass
