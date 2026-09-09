@@ -24,14 +24,15 @@ def traverse_directory(directory) -> dict:
     for item in dir_path.iterdir():
         if item.is_file():
             filepath = pathlib.Path(item)
-            hash_table[filepath] = hash_file(filepath)
+            filename = filepath.name
+            hash_table[filename] = hash_file(filepath)
     return hash_table
 
 def generate_table(directory) -> bool:
     hash_table = traverse_directory(directory)
     try:
         with open('hash_table.json', 'w') as file:
-            file.write(json.dump(hash_table))
+            json.dump(hash_table, file, indent=4)
         return True
     except:
         return False
