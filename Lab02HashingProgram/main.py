@@ -5,6 +5,7 @@ ITIS 3200 - Info Security and Privacy
 Professor Jian Xiang
 '''
 import json # https://docs.python.org/3/library/json.html
+import pathlib # https://docs.python.org/3/library/pathlib.html
 import hashlib # https://docs.python.org/3/library/hashlib.html
 hash_alg = 'sha256'
 
@@ -18,7 +19,13 @@ def hash_file(filepath) -> str:
     return hash_obj.hexdigest()
 
 def traverse_directory(directory) -> dict:
-    pass
+    hash_table = dict()
+    dir_path = pathlib.Path(directory)
+    for item in dir_path.iterdir():
+        if item.is_file():
+            filepath = pathlib.Path(item)
+            hash_table[filepath] = hash_file(filepath)
+    return hash_table
 
 def generate_table(directory) -> bool:
     hash_table = traverse_directory(directory)
