@@ -65,23 +65,22 @@ def xor_crypt(data, prng):
 # --- PART B: COMMUNICATION PROTOCOL ---
 
 class Entity:
-    # TODO: Calculate public and private keys with global P and G.
+    # Calculate public and private keys with global P and G.
 
     def __init__(self, name):
         self.name = name
-        self.private_key =
-        self.public_key =
+        self.private_key = secrets.randbelow(P - 3) + 2
+        self.public_key = G**self.private_key % P
         self.session_prng = None
 
     def get_public_hex(self):
         return hex(self.public_key)
 
-    # TODO: calculate and initialize shared secret with SecurePRNG
+    # calculate and initialize shared secret with SecurePRNG
     def establish_session(self, partner_pub_hex):
-        partner_pub =
-        shared_secret =
+        partner_pub = int(partner_pub_hex)
+        shared_secret = partner_pub**self.private_key % P
         self.session_prng = SecurePRNG(shared_secret)
-
 
 # --- DO NOT MODIFY THIS CLASS --- #
 # This class simulates the network and allows for an interceptor 'hook' (Mallory) to manipulate messages in transit.
