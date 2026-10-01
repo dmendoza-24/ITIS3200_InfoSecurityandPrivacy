@@ -61,7 +61,7 @@ class SecurePRNG:
 def xor_crypt(data, prng):
     # Implement Simple XOR stream cipher logic.
     keystream = prng.generate(len(data))
-    return data ^ keystream
+    return bytes(x ^ y for x, y in zip(data, keystream))
 
 # --- PART B: COMMUNICATION PROTOCOL ---
 
@@ -133,12 +133,11 @@ class Mallory:
                 decrypt_prng, encrypt_prng = self.alice_prng, self.bob_prng
             else:
                 decrypt_prng, encrypt_prng = self.bob_prng, self.alice_prng
-            keystream = decrypt_prng.generate(len(payload))
-            plaintext = xor_crypt(payload, keystream)
+            plaintext = xor_crypt(payload, decrypt_prng)
             # Modify the plaintext message in some way
             modified = plaintext + b" You got hacked lol"
             # Then use the PRNG shared with bob to re-encrypt and return the message for Bob
-            ciphertext = xor_crypt(modified, encrypt_prng.generate(len(modified)))
+            ciphertext = xor_crypt(modified, encrypt_prng)
             return ciphertext
         return payload
 
