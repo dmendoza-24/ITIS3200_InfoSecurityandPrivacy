@@ -100,8 +100,8 @@ class Network:
 # Implement logic for Mallory
 class Mallory:
     def __init__(self):
-        self.private_key =
-        self.public_hex =
+        self.private_key = secrets.randbelow(P - 3) + 2
+        self.public_hex = hex(G**self.private_key % P)
 
         # Mallory maintains TWO sessions
         self.alice_prng = None
@@ -113,8 +113,12 @@ class Mallory:
             remote_pub = int(payload, 16)
             my_shared_secret = pow(remote_pub, self.private_key, P)
 
-            # TODO: If the sender is alice, generate a session PRNG with Alice.
+            # If the sender is alice, generate a session PRNG with Alice.
             # If the sender is Bob, generate a session PRNG with Bob.
+            if sender == "Alice":
+                self.alice_prng = SecurePRNG(my_shared_secret)
+            elif sender == "Bob":
+                self.bob_prng = SecurePRNG(my_shared_secret)
 
             return self.public_hex  # Return Mallory's key instead to generate session PRNGs with Alice and Bob
 
@@ -122,15 +126,20 @@ class Mallory:
         if isinstance(payload, bytes):
             print(f"[MALLORY] Intercepting Encrypted Message from {sender}...")
 
-            # TODO: Decrypt the message using the appropriate session PRNG (Hint: Alice is the sender)
+            # Decrypt the message using the appropriate session PRNG (Hint: Alice is the sender)
             # Print the plaintext message to the console for Mallory's spying purposes.
-
+            if sender == "Alice":
+                decrypt_prng, encrypt_prng = self.alice_prng, self.bob_prng
+            else:
+                decrypt_prng, encrypt_prng = self.bob_prng, self.alice_prng
+            keystream = decrypt_prng.generate(len(payload))
+            plaintext = xor_crypt(payload, keystream)
             # Modify the plaintext message in some way
-
+            modified = plaintext + b" You got hacked lol"
             # Then use the PRNG shared with bob to re-encrypt and return the message for Bob
-
+            ciphertext = xor_crypt(modified, encrypt_prng.generate(len(modified)))
+            return ciphertext
         return payload
-
 
 # --- DO NOT MODIFY THIS FUNCTION --- #
 # --- MAIN EXECUTION SIMULATION ---
