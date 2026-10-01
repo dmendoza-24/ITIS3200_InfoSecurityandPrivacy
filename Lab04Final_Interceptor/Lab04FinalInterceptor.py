@@ -44,11 +44,11 @@ G = 2
 class SecurePRNG:
 
     def __init__(self, seed_int):
-        # TODO: Initalize the SecurePRNG with the shared secret (seed_int) calculated from Diffie-Hellman key exchange.
+        # Initalize the SecurePRNG with the shared secret (seed_int) calculated from Diffie-Hellman key exchange.
         self.state = hashlib.sha256(seed_int.to_bytes()).digest()
 
     def generate(self, n_bytes):
-        # TODO: Generates n bytes while ensuring Rollback Resistance.
+        # Generates n bytes while ensuring Rollback Resistance.
         output = b""
         while len(output) < n_bytes:
             # 1. Produce keystream block from current state
@@ -58,10 +58,9 @@ class SecurePRNG:
         return output[:n_bytes]
 
 def xor_crypt(data, prng):
-
-
-# TODO: Implement Simple XOR stream cipher logic.
-
+    # Implement Simple XOR stream cipher logic.
+    keystream = prng.generate(len(data))
+    return data ^ keystream
 
 # --- PART B: COMMUNICATION PROTOCOL ---
 
