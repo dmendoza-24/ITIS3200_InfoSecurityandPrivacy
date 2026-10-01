@@ -45,7 +45,8 @@ class SecurePRNG:
 
     def __init__(self, seed_int):
         # Initalize the SecurePRNG with the shared secret (seed_int) calculated from Diffie-Hellman key exchange.
-        self.state = hashlib.sha256(seed_int.to_bytes()).digest()
+        seed_bytes = seed_int.to_bytes((seed_int.bit_length() + 7) // 8, "big")
+        self.state = hashlib.sha256(seed_bytes).digest()
 
     def generate(self, n_bytes):
         # Generates n bytes while ensuring Rollback Resistance.
@@ -70,7 +71,7 @@ class Entity:
     def __init__(self, name):
         self.name = name
         self.private_key = secrets.randbelow(P - 3) + 2
-        self.public_key = G**self.private_key % P
+        self.public_key = pow(G, self.private_key, P)
         self.session_prng = None
 
     def get_public_hex(self):
@@ -78,8 +79,8 @@ class Entity:
 
     # calculate and initialize shared secret with SecurePRNG
     def establish_session(self, partner_pub_hex):
-        partner_pub = int(partner_pub_hex)
-        shared_secret = partner_pub**self.private_key % P
+        partner_pub = int(partner_pub_hex, 16)
+        shared_secret = pow(partner_pub, self.private_key, P)
         self.session_prng = SecurePRNG(shared_secret)
 
 # --- DO NOT MODIFY THIS CLASS --- #
@@ -101,7 +102,7 @@ class Network:
 class Mallory:
     def __init__(self):
         self.private_key = secrets.randbelow(P - 3) + 2
-        self.public_hex = hex(G**self.private_key % P)
+        self.public_hex = hex(pow(G, self.private_key, P))
 
         # Mallory maintains TWO sessions
         self.alice_prng = None
