@@ -18,15 +18,18 @@ def setup_initial_state():
 # Add each case here
 TEST_CASES = {
     1: [("read", "alice", "emails.txt")], # Alice reads emails.txt
-    2: [], # Alice reads password.txt
-    3: [], # Eve reads pub.txt
-    4: [], # Eve reads emails.txt
-    5: [], # Bob reads password.txt
-    6: [], # Alice reads emails.txt then writes to pub.txt
-    7: [], # Alice reads emails.txt then writes to password.txt
-    8: [(), (), (), ()], # Alice reads emails.txt then writes to emails.txt, next she reads username.txt and writes to emails.txt
-    9: [], # Alice reads emails.txt then writes to username.txt, next she reads password.txt and finally writes to password.txt
-    10: [], # Alice reads pub.txt then writes to emails.txt, Bob then reads emails.txt
+    2: [("read", "alice", "password.txt")], # Alice reads password.txt
+    3: [("read", "eve", "pub.txt")], # Eve reads pub.txt
+    4: [("read", "eve", "emails.txt")], # Eve reads emails.txt
+    5: [("read", "bob", "password.txt")], # Bob reads password.txt
+    6: [("read", "alice", "emails.txt"), ("write", "alice", "pub.txt")], # Alice reads emails.txt then writes to pub.txt
+    7: [("read", "alice", "emails.txt"), ("write", "alice", "password.txt")], # Alice reads emails.txt then writes to password.txt
+    8: [("read", "alice", "emails.txt"), ("write", "alice", "emails.txt"), # Alice reads emails.txt then writes to emails.txt,
+        ("read", "alice", "username.txt"), ("write", "alice", "emails.txt")], # next she reads username.txt and writes to emails.txt
+    9: [("read", "alice", "emails.txt"), ("write", "alice", "username.txt"), # Alice reads emails.txt then writes to username.txt,
+        ("read", "alice", "password.txt"), ("write", "alice", "password.txt")], # next she reads password.txt and finally writes to password.txt
+    10: [("read", "alice", "pub.txt"), ("write", "alice", "emails.txt"), # Alice reads pub.txt then writes to emails.txt,
+         ("read", "bob", "emails.txt")], # Bob then reads emails.txt
     11: [], # Alice reads pub.txt then writes to username.txt, Bob then reads username.txt
     12: [], # Alice reads pub.txt then writes to password.txt, Bob then reads password.txt
     13: [], # Alice reads pub.txt then writes to emails.txt, Eve then reads emails.txt
